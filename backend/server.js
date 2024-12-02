@@ -1,9 +1,17 @@
 import express from "express";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
-// routes
+// Import routes
 import authRoutes from "./routes/auth.route.js";
 
+import productsRoutes from "./routes/products.route.js";
+
+import cartRoutes from "./routes/cart.route.js";
+
+import couponRoutes from "./routes/coupon.route.js";
+
+// Import database connection function
 import { connectDB } from "./lib/db.js";
 
 dotenv.config();
@@ -11,11 +19,39 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// authentication
-app.use("/api/auth", authRoutes);
+// Middleware to parse JSON
+app.use(express.json());
 
-app.listen(5000, () => {
-  console.log("Server is running on http://localhost:" + PORT);
+// Middleware to parse cookies
 
-  connectDB();
+app.use(cookieParser()); //allows cookies to be parsed
+
+// Routes
+app.use("/api/auth", authRoutes); //allows access to auth routes
+app.use("/api/products", productsRoutes); //allows access to products routes
+app.use("/api/cart", cartRoutes); //allows access to cart routes
+app.use("/api/coupons", couponRoutes); //allows access to coupon routes
+
+// Global error handler (optional but recommended)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    message:
+      "user validation failed: email: email is required, password: password is required",
+  });
 });
+
+// Start the server and connect to the database
+const startServer = async () => {
+  try {
+    await connectDB(); // Ensure the database connection is successful
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to connect to the database:", error.message);
+    process.exit(1); // Exit the process with failure code
+  }
+};
+
+startServer();
