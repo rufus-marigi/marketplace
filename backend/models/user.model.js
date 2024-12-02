@@ -41,23 +41,24 @@ const userSchema = new mongoose.Schema(
     timestamps: true, // Add createdAt and updatedAt fields automatically
   }
 );
+
+// Hash password before saving the user
 userSchema.pre("save", async function (next) {
-  // Check if the password field is modified
   if (!this.isModified("password")) {
     return next();
   }
 
   try {
-    // Generate a salt and hash the password
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    next(); // Continue with the next middleware or save process
+    next();
   } catch (error) {
-    next(error); // Pass error to the next middleware
+    next(error);
   }
 });
 
-userSchema.methods.comparePassword = async function (password) {
+// Method to compare entered password with stored hashed password
+userSchema.methods.matchPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
