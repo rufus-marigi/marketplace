@@ -140,18 +140,12 @@ export const refreshToken = async (req, res) => {
   }
 };
 
-//TODO: Implement get profile later.
-/* get profile
+//get profile
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.json(user);
+    res.json(req.user);
   } catch (error) {
     console.log("Error in getProfile controller", error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-}
-*/
+};
