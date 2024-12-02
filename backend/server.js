@@ -11,6 +11,10 @@ import cartRoutes from "./routes/cart.route.js";
 
 import couponRoutes from "./routes/coupon.route.js";
 
+import paymentRoutes from "./routes/payment.route.js";
+
+import analyticsRoutes from "./routes/analytics.route.js";
+
 // Import database connection function
 import { connectDB } from "./lib/db.js";
 
@@ -31,6 +35,8 @@ app.use("/api/auth", authRoutes); //allows access to auth routes
 app.use("/api/products", productsRoutes); //allows access to products routes
 app.use("/api/cart", cartRoutes); //allows access to cart routes
 app.use("/api/coupons", couponRoutes); //allows access to coupon routes
+app.use("/api/payments", paymentRoutes); //allows access to payment routes
+app.use("/api/analytics", analyticsRoutes); //allows access to analytics routes
 
 // Global error handler (optional but recommended)
 app.use((err, req, res, next) => {
