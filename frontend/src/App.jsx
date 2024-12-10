@@ -2,12 +2,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
+import AdminPage from "./pages/AdminPage";
 
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import useUserStore from "./stores/useUserStore";
 import { useEffect } from "react";
 import LoadingSpinner from "./components/loadingSpinner";
+
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
 
@@ -36,6 +38,12 @@ function App() {
           <Route
             path="/login"
             element={!user ? <LoginPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/secret-dashboard"
+            element={
+              user?.role === "admin" ? <AdminPage /> : <Navigate to="/login" />
+            }
           />
         </Routes>
       </div>
