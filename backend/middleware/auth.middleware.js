@@ -24,6 +24,8 @@ export const protectRoute = async (req, res, next) => {
 
     // Attach the user to the request object
     req.user = user;
+    // Debugging log: Check if req.user is properly populated
+    console.log("Authenticated User in Middleware:", req.user);
 
     // Proceed to the next middleware/controller
     next();
