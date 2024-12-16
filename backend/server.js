@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 // Import routes
 import authRoutes from "./routes/auth.route.js";
 
-import productsRoutes from "./routes/products.route.js";
+import productRoutes from "./routes/product.route.js";
 
 import cartRoutes from "./routes/cart.route.js";
 
@@ -32,7 +32,7 @@ app.use(cookieParser()); //allows cookies to be parsed
 
 // Routes
 app.use("/api/auth", authRoutes); //allows access to auth routes
-app.use("/api/products", productsRoutes); //allows access to products routes
+app.use("/api/products", productRoutes); //allows access to products routes
 app.use("/api/cart", cartRoutes); //allows access to cart routes
 app.use("/api/coupons", couponRoutes); //allows access to coupon routes
 app.use("/api/payments", paymentRoutes); //allows access to payment routes
