@@ -3,33 +3,30 @@ import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
 
 export const getAnalyticsData = async () => {
-  try {
-    const totalUsers = await User.countDocuments();
-    const totalProducts = await Product.countDocuments();
+  const totalUsers = await User.countDocuments();
+  const totalProducts = await Product.countDocuments();
 
-    // Aggregate total sales and revenue
-    const salesData = await Order.aggregate([
-      {
-        $group: {
-          _id: null, // Group all orders
-          totalSales: { $sum: 1 },
-          totalRevenue: { $sum: "$totalAmount" },
-        },
+  const salesData = await Order.aggregate([
+    {
+      $group: {
+        _id: null, // it groups all documents together,
+        totalSales: { $sum: 1 },
+        totalRevenue: { $sum: "$totalAmount" },
       },
-    ]);
+    },
+  ]);
 
-    const { totalSales = 0, totalRevenue = 0 } = salesData[0] || {};
+  const { totalSales, totalRevenue } = salesData[0] || {
+    totalSales: 0,
+    totalRevenue: 0,
+  };
 
-    return {
-      users: totalUsers,
-      products: totalProducts,
-      totalSales,
-      totalRevenue,
-    };
-  } catch (error) {
-    console.error("Error fetching analytics data:", error.message);
-    throw new Error("Unable to fetch analytics data.");
-  }
+  return {
+    users: totalUsers,
+    products: totalProducts,
+    totalSales,
+    totalRevenue,
+  };
 };
 
 export const getDailySalesData = async (startDate, endDate) => {
@@ -46,28 +43,36 @@ export const getDailySalesData = async (startDate, endDate) => {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          sales: { $sum: 1 }, // Total number of orders
-          revenue: { $sum: "$totalAmount" }, // Total revenue for each date
+          sales: { $sum: 1 },
+          revenue: { $sum: "$totalAmount" },
         },
       },
-      { $sort: { _id: 1 } }, // Sort by date ascending
+      { $sort: { _id: 1 } },
     ]);
 
-    // Ensure all dates are included, even with no data
+    // example of dailySalesData
+    // [
+    // 	{
+    // 		_id: "2024-08-18",
+    // 		sales: 12,
+    // 		revenue: 1450.75
+    // 	},
+    // ]
+
     const dateArray = getDatesInRange(startDate, endDate);
+    // console.log(dateArray) // ['2024-08-18', '2024-08-19', ... ]
 
     return dateArray.map((date) => {
       const foundData = dailySalesData.find((item) => item._id === date);
 
       return {
         date,
-        sales: foundData?.sales || 0, // Default to 0 if no sales
-        revenue: foundData?.revenue || 0, // Default to 0 if no revenue
+        sales: foundData?.sales || 0,
+        revenue: foundData?.revenue || 0,
       };
     });
   } catch (error) {
-    console.error("Error fetching daily sales data:", error.message);
-    throw new Error("Unable to fetch daily sales data.");
+    throw error;
   }
 };
 
@@ -76,9 +81,7 @@ function getDatesInRange(startDate, endDate) {
   let currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
-    // Format date to YYYY-MM-DD
     dates.push(currentDate.toISOString().split("T")[0]);
-    // Increment by one day
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
