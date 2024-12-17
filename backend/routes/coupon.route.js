@@ -8,6 +8,6 @@ const router = express.Router(); // Create a new Express router instance
 router.get("/", protectRoute, getCoupon);
 
 // Route to validate a coupon
-router.get("/validate", protectRoute, validateCoupon);
+router.post("/validate", protectRoute, validateCoupon);
 
 export default router; // Export the router for use in the main app
