@@ -16,12 +16,28 @@ router.get("/", protectRoute, adminRoute, async (req, res) => {
 
     const dailySalesData = await getDailySalesData(startDate, endDate);
 
+    // Log the response to ensure data is correct
+    console.log("Top Products Data:", analyticsData.topProducts); // Check the actual data
+
     res.json({
       analyticsData,
       dailySalesData,
     });
   } catch (error) {
     console.log("Error in analytics route", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// analytics.route.js
+import { getTopProducts } from "../controllers/analytics.controller.js";
+
+router.get("/top-products", protectRoute, adminRoute, async (req, res) => {
+  try {
+    const topProducts = await getTopProducts();
+    res.json(topProducts);
+  } catch (error) {
+    console.log("Error in top products route", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
