@@ -149,12 +149,12 @@ const AnalyticsTab = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
-        <h2 className="text-white text-2xl font-semibold mb-4">
+        <h2 className="text-2xl font-bold text-center text-emerald-600 mb-4">
           Top Products by Sales
         </h2>
         <table className="min-w-full table-auto">
           <thead>
-            <tr>
+            <tr className="bg-emerald-600 text-white">
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-300">
                 Product Name
               </th>
