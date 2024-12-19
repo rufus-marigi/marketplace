@@ -89,7 +89,7 @@ const AnalyticsTab = () => {
     },
     {
       title: "Total Revenue",
-      value: `$${analyticsData.totalRevenue}`,
+      value: `$${analyticsData.totalRevenue.toFixed(2)}`, // Format totalRevenue to 2 decimal places
       icon: DollarSign,
       color: "from-emerald-500 to-lime-700",
     },
