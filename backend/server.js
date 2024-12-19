@@ -19,6 +19,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Resolve the __dirname equivalent for ES module
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 // Middleware to parse JSON
 app.use(express.json({ limit: "10mb" }));
 
