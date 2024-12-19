@@ -76,10 +76,42 @@ export const useUserStore = create((set, get) => ({
     }
   },
 }));
+
+// add axios interceptors for refrshing the access token
+let refreshPromise = null;
+
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // If a refresh token is available, wait for it to complete
+        if (refreshPromise) {
+          await refreshPromise;
+          return axios(originalRequest);
+        }
+        // start a new refresh token request
+        refreshPromise = useUserStore.getState().refreshToken();
+        await refreshPromise;
+        refreshPromise = null;
+        return axios(originalRequest);
+      } catch (refreshError) {
+        //if the refresh token fails, log out the user
+        useUserStore.getState().logout();
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default useUserStore;
 
 //TODO:
-// add axios interceptors for refrshing the access token
+
 //add error handling for failed login/signup
 //add loading state for signup/login
 //add remember me feature
