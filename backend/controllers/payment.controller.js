@@ -86,17 +86,7 @@ export const checkoutSuccess = async (req, res) => {
     const { sessionId } = req.body;
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    // Check if the session has already been processed (duplicate check)
-    const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
-    if (existingOrder) {
-      return res.status(400).json({
-        success: false,
-        message: "Order has already been processed for this session.",
-      });
-    }
-
     if (session.payment_status === "paid") {
-      // Deactivate the coupon if used
       if (session.metadata.couponCode) {
         await Coupon.findOneAndUpdate(
           {
@@ -109,7 +99,7 @@ export const checkoutSuccess = async (req, res) => {
         );
       }
 
-      // Create a new Order
+      // create a new Order
       const products = JSON.parse(session.metadata.products);
       const newOrder = new Order({
         user: session.metadata.userId,
@@ -118,7 +108,7 @@ export const checkoutSuccess = async (req, res) => {
           quantity: product.quantity,
           price: product.price,
         })),
-        totalAmount: session.amount_total / 100, // convert from cents to dollars
+        totalAmount: session.amount_total / 100, // convert from cents to dollars,
         stripeSessionId: sessionId,
       });
 
@@ -133,10 +123,12 @@ export const checkoutSuccess = async (req, res) => {
     }
   } catch (error) {
     console.error("Error processing successful checkout:", error);
-    res.status(500).json({
-      message: "Error processing successful checkout",
-      error: error.message,
-    });
+    res
+      .status(500)
+      .json({
+        message: "Error processing successful checkout",
+        error: error.message,
+      });
   }
 };
 
