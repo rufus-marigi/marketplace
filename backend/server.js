@@ -1,18 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import path from "path";
 
 // Import routes
 import authRoutes from "./routes/auth.route.js";
-
 import productRoutes from "./routes/product.route.js";
-
 import cartRoutes from "./routes/cart.route.js";
-
 import couponRoutes from "./routes/coupon.route.js";
-
 import paymentRoutes from "./routes/payment.route.js";
-
 import analyticsRoutes from "./routes/analytics.route.js";
 
 // Import database connection function
@@ -27,16 +23,22 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json({ limit: "10mb" }));
 
 // Middleware to parse cookies
-
-app.use(cookieParser()); //allows cookies to be parsed
+app.use(cookieParser()); // Allows cookies to be parsed
 
 // Routes
-app.use("/api/auth", authRoutes); //allows access to auth routes
-app.use("/api/products", productRoutes); //allows access to products routes
-app.use("/api/cart", cartRoutes); //allows access to cart routes
-app.use("/api/coupons", couponRoutes); //allows access to coupon routes
-app.use("/api/payments", paymentRoutes); //allows access to payment routes
-app.use("/api/analytics", analyticsRoutes); //allows access to analytics routes
+app.use("/api/auth", authRoutes); // Allows access to auth routes
+app.use("/api/products", productRoutes); // Allows access to products routes
+app.use("/api/cart", cartRoutes); // Allows access to cart routes
+app.use("/api/coupons", couponRoutes); // Allows access to coupon routes
+app.use("/api/payments", paymentRoutes); // Allows access to payment routes
+app.use("/api/analytics", analyticsRoutes); // Allows access to analytics routes
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
+}
 
 // Global error handler (optional but recommended)
 app.use((err, req, res, next) => {
